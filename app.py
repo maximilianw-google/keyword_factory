@@ -135,7 +135,20 @@ with st.expander("**Authentication**", expanded=not st.session_state.valid_confi
         st.text_input("MCC ID", value=config.login_customer_id, disabled= True)
         edit = st.button("Edit Credentials", on_click=reset_config)
 
-with st.expander("**Run Settings**", expanded=st.session_state.valid_config and ("run_btn_clicked" not in st.session_state or not st.session_state.run_btn_clicked)):
+with st.expander("**Component**", expanded=st.session_state.valid_config):
+    st.radio(
+        "Select which component you want to use",
+        ['Generate new keywords', 'Classify and dedup keyword recommendations', 'Translate keywords'],
+        index=0,
+        key='component', label_visibility="visible")
+
+
+with st.expander(
+    "**Run Settings**",
+    expanded=(
+        st.session_state.valid_config
+        and st.session_state.component == 'Classify and dedup keyword recommendations'
+        and ("run_btn_clicked" not in st.session_state or not st.session_state.run_btn_clicked))):
 
     # Accounts picker
     st.radio("Run on all accounts under MCC or selecet specific accounts", [

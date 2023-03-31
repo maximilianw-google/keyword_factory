@@ -29,6 +29,7 @@ import json
 
 _LOGS_PATH = Path('./server.log')
 _CLASSIFIER_URL = os.getenv('cf_uri')
+_TRANSLATOR_URL = os.getenv('tl_uri')
 
 logging.basicConfig(filename=_LOGS_PATH,
                     level=logging.INFO,
@@ -67,7 +68,6 @@ def remove_keywords(client: GoogleAdsClient, recommendations: List[str], accoutn
         except Exception as e:
             logging.exception(e)
 
-
 def classify_keywords(kws) -> Dict[str, Dict[str, str]]:
     """ Classifys the list of keywords, using GCP NLP classification service.
     Args: List[str]
@@ -80,9 +80,22 @@ def classify_keywords(kws) -> Dict[str, Dict[str, str]]:
     req.add_header("Authorization", f"Bearer {id_token}")
     req.add_header('Content-Type', 'application/json')
 
-    data = json.dumps({"kws":kws})
+    data = json.dumps({"kws": kws})
     data = data.encode()
-    response = urllib.request.urlopen(req,data=data)
+    response = urllib.request.urlopen(req, data=data)
+    content = response.read().decode('utf-8')
+    return json.loads(content)
+
+def translate_keywords(kws) -> Dict[str, str]:
+    req = urllib.request.Request(_TRANSLATOR_URL, method="POST")
+    auth_req = google.auth.transport.requests.Request()
+    id_token = google.oauth2.id_token.fetch_id_token(auth_req, _TRANSLATOR_URL)
+    req.add_header("Authorization", f"Bearer {id_token}")
+    req.add_header('Content-Type', 'application/json')
+
+    data = json.dumps({"kws": kws})
+    data = data.encode()
+    response = urllib.request.urlopen(req, data=data)
     content = response.read().decode('utf-8')
     return json.loads(content)
 

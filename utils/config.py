@@ -24,19 +24,20 @@ import os
 import yaml
 
 
-BUCKET_NAME = os.getenv('bucket_name')
+BUCKET_NAME = os.getenv('bucket_name', os.getcwd())
 CONFIG_FILE_NAME = 'config.yaml'
-CONFIG_FILE_PATH = BUCKET_NAME +  '/' + CONFIG_FILE_NAME
+CONFIG_FILE_PATH = os.path.join(BUCKET_NAME, CONFIG_FILE_NAME)
 _ADS_API_VERSION = 'v11'
 
 SHEETS_SERVICE_SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
-          'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive']
+          'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive',
+          'https://www.googleapis.com/auth/cloud-translation']
 
 class Config:
     def __init__(self) -> None:
         self.file_path = CONFIG_FILE_PATH
         self.storage_client = storage.Client()
-        self.bucket = self.storage_client.bucket(BUCKET_NAME)
+        self.bucket = BUCKET_NAME #self.storage_client.bucket(BUCKET_NAME)
         config = self.load_config_from_file()
         if config is None:
             config = {}

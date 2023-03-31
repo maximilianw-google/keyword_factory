@@ -36,3 +36,13 @@ gcloud functions deploy classifier-keyword-factory \
 --entry-point=classify \
 --trigger-http \
 --timeout=900s
+
+echo "Creating Translator cloud function..."
+gcloud functions deploy translator-keyword-factory \
+--gen2 \
+--region=${GOOGLE_CLOUD_REGION} \
+--runtime=python39 \
+--source=./translator/ \
+--entry-point=translate \
+--trigger-http \
+--timeout=900s

@@ -111,3 +111,15 @@ def format_data_for_sheet(data: Dict[str, Dict[str, Any]]) -> List[List[Any]]:
         values.append([kw, full_cat, top_cat, bottom_cat, conf])        
 
     return values
+
+def format_data_to_add_campaigns_template(
+    data: Dict[str, Dict[str, Any]]) -> List[List[Any]]:
+    return
+
+def format_data_to_add_adgroups_template(
+    data: Dict[str, Dict[str, Any]]) -> List[List[Any]]:
+    return
+
+def format_data_to_add_keywords_template(
+    data: Dict[str, Dict[str, Any]]) -> List[List[Any]]:
+    return

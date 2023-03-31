@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List
+from typing import List, Optional, Union
 
 class Builder(object):
     def __init__(self, client, customer_id):
@@ -121,7 +121,53 @@ class MccBuilder(Builder):
                 accounts.append(str(row.customer_client.id))
         
         return accounts
-    
+
+    def get_keywords_for_campaigns(
+        self,
+        campaign_ids: list[Union[int, str]],
+        kw_statuses: Optional[list[str]] = ['ENABLED'],
+        campaign_statuses: Optional[list[str]] = ['ENABLED'],
+        adgroup_statuses: Optional[list[str]] = ['ENABLED']
+    ):
+
+        kw_rows = self._get_rows(f"""
+            SELECT
+                campaign.id,
+                campaign.name,
+                campaign.advertising_channel_type,
+                campaign.bidding_strategy_type,
+                ad_group.id,
+                ad_group.name,
+                ad_group_criterion.keyword.text,
+                ad_group_criterion.keyword.match_type
+            FROM keyword_view
+            WHERE
+                campaign.status in (
+                    {", ".join([f"'{elem}'" for elem in campaign_statuses])})
+                AND ad_group.status in (
+                    {", ".join([f"'{elem}'" for elem in adgroup_statuses])})
+                AND ad_group_criterion.status in (
+                    {", ".join([f"'{elem}'" for elem in kw_statuses])})
+                AND campaign.id in (
+                    {", ".join([f"'{elem}'" for elem in campaign_ids])})
+            """
+        )
+        keywords = []
+        for batch in kw_rows:
+            for row in batch.results:
+                row = row._pb
+                keywords.append(
+                    str(row.customer_client.id),
+                    str(row.campaign.id),
+                    str(row.campaign.name),
+                    str(row.campaign.advertising_channel_type),
+                    str(row.campaign.bidding_strategy_type),
+                    str(row.ad_group.id),
+                    str(row.ad_group.name),
+                    str(row.ad_group_criterion.keyword.text),
+                    str(row.ad_group_criterion.keyword.match_type)
+                )
+        return keywords
 
 class RecBuilder(Builder):
     """Gets Keywords recommendations from a single account."""

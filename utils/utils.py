@@ -15,7 +15,7 @@
 
 from utils.config import Config
 from utils.ads_searcher import MccBuilder
-from typing import List
+from typing import Union
 
 def get_all_child_accounts(config: Config, with_names: bool = False):
     google_ads_client = config.get_ads_client()
@@ -27,7 +27,12 @@ def get_account_labels(config: Config):
     labels = MccBuilder(google_ads_client).get_labels()
     return labels
 
-def get_accounts_by_labels(config: Config, labels: List[str]):
+def get_accounts_by_labels(config: Config, labels: list[str]):
     google_ads_client = config.get_ads_client()
     accounts = MccBuilder(google_ads_client).get_accounts_by_label(labels)
     return accounts
+
+def get_keywords_for_campaigns(config: Config, campaign_ids: list[Union[int, str]]):
+    google_ads_client = config.get_ads_client()
+    keywords = MccBuilder(google_ads_client).get_keywords_for_campaigns(campaign_ids)
+    return keywords
